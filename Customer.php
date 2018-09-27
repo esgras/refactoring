@@ -36,13 +36,7 @@ class Customer
         $result = "Учет аренды для " . $this->getName() . "\n";
 
         foreach ($rentals as $each) {
-            $frequentRenterPoints++;
-
-            if ($each->getMovie()->getPriceCode() == Movie::NEW_RELEASE
-                && $each->getDaysRented() > 1
-            ) {
-                $frequentRenterPoints++;
-            }
+            $frequentRenterPoints = $each->getFrequentRenterPoints();
 
             $result .= "\t" . $each->getMovie()->getTitle() . "\t" . $each->getCharge() . PHP_EOL;
             $totalAmount += $each->getCharge();
