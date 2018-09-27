@@ -30,22 +30,27 @@ class Customer
 
     public function statement(): string
     {
-        $totalAmount = 0;
         $frequentRenterPoints = 0;
         $rentals = $this->rentals;
         $result = "Учет аренды для " . $this->getName() . "\n";
 
         foreach ($rentals as $each) {
-            $frequentRenterPoints = $each->getFrequentRenterPoints();
+            $frequentRenterPoints += $each->getFrequentRenterPoints();
 
             $result .= "\t" . $each->getMovie()->getTitle() . "\t" . $each->getCharge() . PHP_EOL;
-            $totalAmount += $each->getCharge();
         }
 
-        $result .= "Сумма задолженности составляет " . $totalAmount . PHP_EOL;
+        $result .= "Сумма задолженности составляет " . $this->getTotalCharge() . PHP_EOL;
         $result .= "Вы заработали " . $frequentRenterPoints . "очков за активность";
 
         return $result;
+    }
+
+    public function getTotalCharge()
+    {
+        return array_reduce($this->rentals, function($rental, $sum) {
+            return $rental->getCharge() + $sum;
+        }, 0);
     }
 
 }
