@@ -36,8 +36,6 @@ class Customer
         $result = "Учет аренды для " . $this->getName() . "\n";
 
         foreach ($rentals as $each) {
-            $thisAmount = $each->getCharge();
-
             $frequentRenterPoints++;
 
             if ($each->getMovie()->getPriceCode() == Movie::NEW_RELEASE
@@ -46,7 +44,8 @@ class Customer
                 $frequentRenterPoints++;
             }
 
-            $result .= "\t" . $each->getMovie()->getTitle() . "\t" . $thisAmount . PHP_EOL;
+            $result .= "\t" . $each->getMovie()->getTitle() . "\t" . $each->getCharge() . PHP_EOL;
+            $totalAmount += $each->getCharge();
         }
 
         $result .= "Сумма задолженности составляет " . $totalAmount . PHP_EOL;
