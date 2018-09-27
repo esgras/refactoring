@@ -36,25 +36,7 @@ class Customer
         $result = "Учет аренды для " . $this->getName() . "\n";
 
         foreach ($rentals as $each) {
-            $thisAmount = 0;
-
-            switch ($each->getMovie()->getPriceCode()) {
-                case Movie::REGULAR:
-                    $result += 2;
-                    if ($each->getDaysRented() > 2) {
-                        $result += ($each->getDaysRented() - 2) * 1.5;
-                    }
-                    break;
-                case Movie::NEW_RELEASE:
-                    $result += $each->getDaysRented() * 3;
-                    break;
-                case Movie::CHILDRENS:
-                    $result += 1.5;
-                    if ($each->getDaysRented() > 3) {
-                        $result += ($each->getDaysRented() - 3) * 1.5;
-                    }
-                    break;
-            }
+            $thisAmount = $this->amountFor($each);
 
             $frequentRenterPoints++;
 
@@ -73,4 +55,28 @@ class Customer
         return $result;
     }
 
+
+    private function amountFor(Rental $rental)
+    {
+        $result = 0;
+        switch ($rental->getMovie()->getPriceCode()) {
+            case Movie::REGULAR:
+                $result += 2;
+                if ($rental->getDaysRented() > 2) {
+                    $result += ($rental->getDaysRented() - 2) * 1.5;
+                }
+                break;
+            case Movie::NEW_RELEASE:
+                $result += $rental->getDaysRented() * 3;
+                break;
+            case Movie::CHILDRENS:
+                $result += 1.5;
+                if ($rental->getDaysRented() > 3) {
+                    $result += ($rental->getDaysRented() - 3) * 1.5;
+                }
+                break;
+        }
+
+        return $result;
+    }
 }
