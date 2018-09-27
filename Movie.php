@@ -2,6 +2,10 @@
 
 namespace Ref;
 
+use Ref\Prices\ChildrensPrice;
+use Ref\Prices\NewReleasePrice;
+use Ref\Prices\RegularPrice;
+
 class Movie
 {
     const CHILDRENS = 2;
@@ -9,12 +13,13 @@ class Movie
     const NEW_RELEASE = 1;
 
     private $title;
-    private $priceCode;
+    /** @var  Price */
+    private $price;
 
     public function __construct(string $title, int $priceCode)
     {
         $this->title = $title;
-        $this->priceCode = $priceCode;
+        $this->setPriceCode($priceCode);
     }
 
     /**
@@ -22,7 +27,7 @@ class Movie
      */
     public function getPriceCode(): int
     {
-        return $this->priceCode;
+        return $this->price->getPriceCode();
     }
 
     /**
@@ -31,7 +36,18 @@ class Movie
      */
     public function setPriceCode(int $priceCode): self
     {
-        $this->priceCode = $priceCode;
+        switch ($priceCode) {
+            case self::REGULAR:
+                $this->price = new RegularPrice();
+            break;
+            case self::NEW_RELEASE:
+                $this->price = new NewReleasePrice();
+            break;
+            case self::CHILDRENS:
+                $this->price = new ChildrensPrice();
+            break;
+        }
+
         return $this;
     }
 
@@ -45,30 +61,13 @@ class Movie
 
     public function getCharge(int $daysRented): float
     {
-        $result = 0;
-        switch ($this->getPriceCode()) {
-            case Movie::REGULAR:
-                $result += 2;
-                if ($daysRented > 2) {
-                    $result += ($daysRented - 2) * 1.5;
-                }
-                break;
-            case Movie::NEW_RELEASE:
-                $result += $daysRented * 3;
-                break;
-            case Movie::CHILDRENS:
-                $result += 1.5;
-                if ($daysRented > 3) {
-                    $result += ($daysRented - 3) * 1.5;
-                }
-                break;
-        }
-
-        return $result;
+        return $this->price->getCharge($daysRented);
     }
 
     public function getFrequentRenterPoints(int $daysRented): int
     {
+        return $this->price->getFrequentRenterPoints($daysRented);
+
         if ($this->getPriceCode() == Movie::NEW_RELEASE
             && $daysRented > 1
         ) {
